@@ -1,31 +1,30 @@
 #!/usr/bin/env bash
 
 if [[ $1 == "--help" || $1 == "-h" ]]; then
-  echo "usage: use \`run\` to run all scripts in the /runs folder"
-  echo "       use \`run <filter-query>\` to only run scripts containing the given string"
+  echo "usage: use \`run\` to run all scripts in runs/common and runs/<os> (macos or wsl)"
+  echo "       use \`run <filter-query>\` to only run scripts whose name contains the given string"
   echo "       use \`run dry <filter-query>\` to dry run the installation"
   exit 0
 fi
 
-script_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
-folder_name="./runs"
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 filter=""
 dry="0"
 
-while [[ $# > 0 ]]; do
+while [[ $# -gt 0 ]]; do
   if  [[ $1 == "dry" ]]; then
     dry="1"
   else
     filter="$1"
   fi
-  shift # remove the first argument from the list
+  shift
 
 done
 
 log() {
   if [[ $dry == "1" ]]; then
     echo "[DRY_RUN]: $@"
-  else 
+  else
     echo "$@"
   fi
 }
@@ -35,32 +34,39 @@ execute() {
   if [[ $dry == "1" ]]; then
     return
   fi
-  
-  ./"$@" # execute the passed command
+
+  "$@" # execute the passed command
 }
 
-log "$script_dir -- $filter"
+cd "$script_dir"
+source ./lib/os.sh
 
-cd $script_dir
+if [[ $OS == "unsupported" ]]; then
+  echo "Unsupported platform (need macOS or WSL)"
+  exit 1
+fi
 
-# for linux use: find $folder_name -mindepth 1 -maxdepth 1 -type f -executable 
-scripts=$(find $folder_name -mindepth 1 -maxdepth 1 -type f -perm +111)
+log "$script_dir -- os: $OS -- filter: $filter"
+
+# common runs first (sorts before macos and wsl)
+folders="./runs/common ./runs/$OS"
+
+scripts=$(find_scripts $folders)
 
 # Likely forgot to make executable
-non_scripts=$(find $folder_name -mindepth 1 -maxdepth 1 -type f ! -perm +111)
+non_scripts=$(find_non_scripts $folders)
 if [[ $non_scripts != "" ]]; then
-  log "ATTENTION: you have non executable files in $folder_name:"
+  log "ATTENTION: you have non executable files:"
   log "$non_scripts"
   log "Aborting execution"
   exit 1
 fi
 
 for script in $scripts; do
-  if echo $script | grep -qv "$filter"; then 
+  if [[ $(basename $script) != *"$filter"* ]]; then
     log "ignoring $script"
     continue
   fi
 
-  execute $script
+  execute $script || exit 1
 done
-
