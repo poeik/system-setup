@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+brew install --cask nikitabobko/tap/aerospace
+brew install --cask ghostty
+brew install --cask bitwarden
+brew install --cask obsidian
+brew install --cask google-drive
+brew install --cask ql-markdown
+brew install --cask docker
+brew install --cask docker-desktop
+brew install --cask whatsapp
+brew install --cask raycast

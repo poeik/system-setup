@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+personal=$HOME/personal
+mkdir -p $personal
+
+pushd $personal
+if [[ ! -d dotfiles ]]; then
+  git clone git@github.com:poeik/dotfiles.git
+fi
+./dotfiles/dev-env
+popd

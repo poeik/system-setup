@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Neovim plugin dependencies
+pkg_install nvim
+pkg_install ripgrep fd # for telescope
+
+# Download spell checker files headlessly 
+for lang in en de; do
+  nvim --headless -u NORC \
+    -c "lua require('nvim.spellfile').config({ confirm = false })" \
+    -c "lua require('nvim.spellfile').get('$lang')" \
+    -c "qa"
+done
+

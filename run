@@ -40,6 +40,7 @@ execute() {
 
 cd "$script_dir"
 source ./lib/os.sh
+source ./lib/helpers.sh
 
 if [[ $OS == "unsupported" ]]; then
   echo "Unsupported platform (need macOS or WSL)"

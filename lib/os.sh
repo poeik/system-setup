@@ -26,27 +26,31 @@ export OS
 is_macos() { [[ $OS == "macos" ]]; }
 is_wsl() { [[ $OS == "wsl" ]]; }
 
-# find_scripts <folder>...: executable files, sorted
+sort_by_basename() {
+  awk -F/ '{print $NF"\t"$0}' | sort -k1,1 -s | cut -f2-
+}
+
+# find_scripts <folder>...: executable files, sorted by basename within each folder
 find_scripts() {
   if is_macos; then
-    find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' -perm +111 | sort
+    find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' -perm +111 | sort_by_basename
   else
-    find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' -executable | sort
+    find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' -executable | sort_by_basename
   fi
 }
 
-# find_non_scripts <folder>...: files that are not executable
+# find_non_scripts <folder>...: files that are not executable, sorted by basename within each folder
 find_non_scripts() {
-  if is_macos; then
-    find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' ! -perm +111 | sort
-  else
-    find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' ! -executable | sort
-  fi
+ if is_macos; then
+   find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' ! -perm +111
+ else
+   find "$@" -mindepth 1 -maxdepth 1 -type f ! -name '.*' ! -executable
+ fi
 }
 
 pkg_install() {
   if is_macos; then
-    brew install "$@"
+    brew install -y "$@"
   elif is_wsl; then
     sudo apt-get install -y "$@"
   else

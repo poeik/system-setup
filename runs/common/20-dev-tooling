@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# tmux setup
+pkg_install tmux fzf 
+
+# oh my zsh
+if [[ ! -d $HOME/.oh-my-zsh ]]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  curl -L git.io/antigen > $HOME/.antigen.zsh
+  mv $HOME/.zshrc.pre-oh-my-zsh $HOME/.zshrc
+fi
+
+# important cli tools
+pkg_install jq
+
+if not_available sdk; then
+  curl -s "https://get.sdkman.io" | bash
+fi
