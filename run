@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+if [[ $1 == "--help" || $1 == "-h" ]]; then
+  echo "usage: use \`run\` to run all scripts in the /runs folder"
+  echo "       use \`run <filter-query>\` to only run scripts containing the given string"
+  echo "       use \`run dry <filter-query>\` to dry run the installation"
+  exit 0
+fi
+
+script_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+folder_name="./runs"
+filter=""
+dry="0"
+
+while [[ $# > 0 ]]; do
+  if  [[ $1 == "dry" ]]; then
+    dry="1"
+  else
+    filter="$1"
+  fi
+  shift # remove the first argument from the list
+
+done
+
+log() {
+  if [[ $dry == "1" ]]; then
+    echo "[DRY_RUN]: $@"
+  else 
+    echo "$@"
+  fi
+}
+
+execute() {
+  log "execute $@"
+  if [[ $dry == "1" ]]; then
+    return
+  fi
+  
+  ./"$@" # execute the passed command
+}
+
+log "$script_dir -- $filter"
+
+cd $script_dir
+
+# for linux use: find $folder_name -mindepth 1 -maxdepth 1 -type f -executable 
+scripts=$(find $folder_name -mindepth 1 -maxdepth 1 -type f -perm +111)
+
+# Likely forgot to make executable
+non_scripts=$(find $folder_name -mindepth 1 -maxdepth 1 -type f ! -perm +111)
+if [[ $non_scripts != "" ]]; then
+  log "ATTENTION: you have non executable files in $folder_name:"
+  log "$non_scripts"
+  log "Aborting execution"
+  exit 1
+fi
+
+for script in $scripts; do
+  if echo $script | grep -qv "$filter"; then 
+    log "ignoring $script"
+    continue
+  fi
+
+  execute $script
+done
+
