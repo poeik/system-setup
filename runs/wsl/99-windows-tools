@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+winget() {
+  id=$1
+  winget.exe install --id $id -e --accept-package-agreements --accept-source-agreements
+}
+
+winget LGUG2Z.komorebi
+winget LGUG2Z.whkd
+winget AmN.yasb
+winget Alacritty.Alacritty
+winget raycast
