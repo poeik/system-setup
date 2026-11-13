@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Neovim plugin dependencies
-pkg_install nvim
-pkg_install ripgrep fd # for telescope
+pkg_install neovim
+pkg_install ripgrep fd-find # for telescope
 
 # Download spell checker files headlessly 
 for lang in en de; do
