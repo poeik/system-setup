@@ -4,9 +4,9 @@ pkg_install tmux fzf
 
 # oh my zsh
 if [[ ! -d $HOME/.oh-my-zsh ]]; then
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  curl -L git.io/antigen > $HOME/.antigen.zsh
-  mv $HOME/.zshrc.pre-oh-my-zsh $HOME/.zshrc
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  curl -fsSL git.io/antigen > "$HOME/.antigen.zsh"
 fi
 
 # important cli tools

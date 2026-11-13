@@ -2,7 +2,7 @@
 
 # Neovim plugin dependencies
 pkg_install neovim
-pkg_install ripgrep fd-find # for telescope
+pkg_install ripgrep fd-find fd # for telescope
 
 # Download spell checker files headlessly 
 for lang in en de; do

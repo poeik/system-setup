@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-personal=$HOME/personal
+personal=$HOME/workspaces/personal
 mkdir -p $personal
 
 pushd $personal
